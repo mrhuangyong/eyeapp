@@ -206,6 +206,9 @@ class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
 
     /// 显示疲劳提醒
     func showFatigueAlert(_ status: FatigueStatus) {
+        // 检查配置：是否启用弹窗提醒
+        guard config.alertModalEnabled else { return }
+
         let alert = NSAlert()
         alert.messageText = "👁️ 疲劳提醒"
         alert.informativeText = "\(status.recommendation)\n\n当前眨眼频率: \(Int(status.blinkRate)) 次/分钟"
