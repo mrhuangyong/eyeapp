@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 背景渐变 -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A90D9"/>
+      <stop offset="100%" style="stop-color:#357ABD"/>
+    </linearGradient>
+    <!-- 眼睛高光渐变 -->
+    <radialGradient id="eyeShine" cx="30%" cy="30%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0"/>
+    </radialGradient>
+    <!-- 瞳孔渐变 -->
+    <radialGradient id="pupilGradient" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#0d0d1a"/>
+    </radialGradient>
+    <!-- 虹膜渐变 -->
+    <radialGradient id="irisGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#5B9BD6"/>
+      <stop offset="60%" style="stop-color:#3D7AB8"/>
+      <stop offset="100%" style="stop-color:#2C5F8A"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 圆角矩形背景 -->
+  <rect x="0" y="0" width="1024" height="1024" rx="220" fill="url(#bgGradient)"/>
+
+  <!-- 眼睛外轮廓 -->
+  <ellipse cx="512" cy="480" rx="340" ry="200" fill="#FFFFFF"/>
+
+  <!-- 眼睛内部（巩膜） -->
+  <ellipse cx="512" cy="480" rx="310" ry="175" fill="#F5F5F7"/>
+
+  <!-- 虹膜 -->
+  <circle cx="512" cy="480" r="120" fill="url(#irisGradient)"/>
+
+  <!-- 瞳孔 -->
+  <circle cx="512" cy="480" r="55" fill="url(#pupilGradient)"/>
+
+  <!-- 瞳孔高光 -->
+  <circle cx="480" cy="450" r="20" fill="#FFFFFF" opacity="0.9"/>
+  <circle cx="545" cy="495" r="10" fill="#FFFFFF" opacity="0.6"/>
+
+  <!-- 眼睛高光 -->
+  <ellipse cx="512" cy="480" rx="310" ry="175" fill="url(#eyeShine)"/>
+
+  <!-- 上眼皮/睫毛 -->
+  <path d="M 172 480
+       Q 256 280, 412 200, 512 180
+       Q 612 200, 768 280, 852 480
+       Q 768 340, 612 300, 512 290
+       Q 412 300, 256 340, 172 480 Z"
+        fill="#FFFFFF" opacity="0.95"/>
+
+  <!-- 下眼皮线条 -->
+  <path d="M 200 520
+       Q 300 620, 512 660, 724 620
+       Q 824 520, 724 560, 512 590
+       Q 300 560, 200 520 Z"
+        fill="none" stroke="#E8E8E8" stroke-width="3" opacity="0.5"/>
+
+  <!-- 监测波纹效果 -->
+  <circle cx="512" cy="480" r="180" fill="none" stroke="#FFFFFF" stroke-width="4" opacity="0.3"/>
+  <circle cx="512" cy="480" r="220" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.2"/>
+  <circle cx="512" cy="480" r="260" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.1"/>
+
+  <!-- 眨眼检测指示器 - 小眼睛图标在右下角 -->
+  <g transform="translate(720, 720)">
+    <!-- 小圆圈背景 -->
+    <circle cx="100" cy="100" r="100" fill="#FFFFFF"/>
+    <!-- 小眼睛 -->
+    <ellipse cx="100" cy="95" rx="55" ry="35" fill="#4A90D9"/>
+    <circle cx="100" cy="95" r="20" fill="#1a1a2e"/>
+    <circle cx="92" cy="88" r="6" fill="#FFFFFF"/>
+    <!-- 眨眼弧线 -->
+    <path d="M 55 85 Q 100 55, 145 85" fill="none" stroke="#4CAF50" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>
