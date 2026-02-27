@@ -48,6 +48,12 @@ struct AppConfig: Codable, Equatable {
     /// 声音提醒
     var soundEnabled: Bool = true
 
+    /// 是否启用弹窗提醒
+    var alertModalEnabled: Bool = true
+
+    /// 是否启用系统通知
+    var alertNotificationEnabled: Bool = true
+
     // MARK: - Detection Settings
 
     /// 检测灵敏度
@@ -104,6 +110,8 @@ struct AppConfig: Codable, Equatable {
         case alertThreshold
         case alertInterval
         case soundEnabled
+        case alertModalEnabled
+        case alertNotificationEnabled
         case sensitivity
         case dataRetentionDays
         case recordRawEvents
@@ -121,6 +129,8 @@ struct AppConfig: Codable, Equatable {
         try container.encode(alertThreshold, forKey: .alertThreshold)
         try container.encode(alertInterval, forKey: .alertInterval)
         try container.encode(soundEnabled, forKey: .soundEnabled)
+        try container.encode(alertModalEnabled, forKey: .alertModalEnabled)
+        try container.encode(alertNotificationEnabled, forKey: .alertNotificationEnabled)
         try container.encode(sensitivity, forKey: .sensitivity)
         try container.encode(dataRetentionDays, forKey: .dataRetentionDays)
         try container.encode(recordRawEvents, forKey: .recordRawEvents)
