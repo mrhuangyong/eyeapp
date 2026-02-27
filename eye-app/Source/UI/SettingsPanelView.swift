@@ -102,6 +102,36 @@ struct AlertSettingsView: View {
 
                 Toggle("启用声音提醒", isOn: $viewModel.config.soundEnabled)
                     .disabled(!viewModel.config.alertEnabled)
+
+                // 🆕 新增：通知方式
+                VStack(alignment: .leading, spacing: 12) {
+                    Divider()
+
+                    Text("通知方式")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+
+                    Toggle("弹窗提醒", isOn: $viewModel.config.alertModalEnabled)
+                        .help("显示模态对话框提醒")
+
+                    Toggle("系统通知", isOn: $viewModel.config.alertNotificationEnabled)
+                        .help("发送系统通知到通知中心")
+
+                    if !viewModel.config.alertModalEnabled && !viewModel.config.alertNotificationEnabled {
+                        HStack(spacing: 4) {
+                            Image(systemName: "exclamationmark.triangle")
+                                .foregroundColor(.orange)
+                            Text("建议至少启用一种通知方式")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                        }
+                    } else {
+                        Text("至少选择一种通知方式")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .disabled(!viewModel.config.alertEnabled)
             }
         }
         .formStyle(.grouped)
