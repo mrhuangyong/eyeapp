@@ -139,6 +139,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             alertManager: alertManager
         )
 
+        // 传递应用配置到 SessionManager
+        sessionManager.config = config
+
         // 订阅会话状态变化
         sessionManager.$state
             .receive(on: DispatchQueue.main)

@@ -357,6 +357,9 @@ class SettingsViewModel: ObservableObject {
             threshold: config.alertThreshold,
             intervalMinutes: config.alertInterval
         )
+
+        // 发送配置更新通知，以便 SessionManager 等服务能够更新配置
+        NotificationCenter.default.post(name: .configUpdated, object: config)
     }
 
     func checkCameraPermission() {

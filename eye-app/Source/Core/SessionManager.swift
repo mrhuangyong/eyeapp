@@ -130,6 +130,15 @@ class SessionManager: ObservableObject {
         visionService.onNoFaceDetected = { [weak self] in
             self?.handleNoFaceDetected()
         }
+
+        // 监听配置更新通知
+        NotificationCenter.default.publisher(for: .configUpdated)
+            .compactMap { $0.object as? AppConfig }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newConfig in
+                self?.config = newConfig
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Public Methods - Session Control
@@ -383,6 +392,7 @@ protocol CameraManagerProtocol {
 
 extension Notification.Name {
     static let sessionStateChanged = Notification.Name("com.eyeapp.sessionStateChanged")
+    static let configUpdated = Notification.Name("com.eyeapp.configUpdated")
 }
 
 // MARK: - BlinkDetector Protocol Conformance
