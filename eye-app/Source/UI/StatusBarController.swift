@@ -218,32 +218,56 @@ class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
 
     // MARK: - Private Methods
 
+    /// 获取图标背景颜色
+    private func getBackgroundColor() -> NSColor {
+        // 优先使用疲劳状态的颜色
+        if let fatigueStatus = fatigueStatus {
+            return NSColor(fatigueStatus.color)
+        }
+
+        // 根据 StatusBarStatus 返回颜色
+        switch status {
+        case .ready:
+            return .systemGray
+        case .running:
+            return .systemGreen
+        case .paused:
+            return .systemOrange
+        case .noFace:
+            return .systemYellow
+        case .noPermission, .noCamera:
+            return .systemRed
+        case .error:
+            return .systemRed
+        }
+    }
+
     private func updateIcon() {
         if let button = statusItem.button {
-            let image = NSImage(systemSymbolName: status.icon, accessibilityDescription: "EyeApp")
-            // 使用模板图像，让系统自动处理颜色
-            image?.isTemplate = true
-            button.image = image
+            // 加载 SF Symbol
+            guard let symbolImage = NSImage(systemSymbolName: status.icon, accessibilityDescription: "EyeApp") else {
+                // Fallback: 使用基本的眼睛图标
+                let fallbackImage = NSImage(systemSymbolName: "eye", accessibilityDescription: "EyeApp")
+                button.image = fallbackImage
+                button.toolTip = status.tooltip
+                return
+            }
+
+            // 获取背景颜色
+            let backgroundColor = getBackgroundColor()
+
+            // 创建复合图像：彩色背景 + 白色图标
+            let iconSize = NSSize(width: 18, height: 18)
+            let compositeImage = symbolImage.composite(withBackgroundColor: backgroundColor, iconSize: iconSize)
+
+            button.image = compositeImage
             button.toolTip = status.tooltip
         }
     }
 
     private func updateIconColor(_ color: Color) {
-        if let button = statusItem.button {
-            // 使用 NSColor.labelColor 作为基础，叠加状态颜色
-            let nsColor = NSColor(color)
-            // 根据外观调整亮度
-            let appearance = button.effectiveAppearance
-            let isDark = appearance.name == .darkAqua || appearance.name == .vibrantDark
-
-            if isDark {
-                // 深色模式：使用较亮的颜色
-                button.contentTintColor = nsColor.withAlphaComponent(0.9)
-            } else {
-                // 浅色模式：使用原色
-                button.contentTintColor = nsColor
-            }
-        }
+        // 重新绘制图标以更新背景颜色
+        updateIcon()
     }
 
     private func updateMenuItems() {
