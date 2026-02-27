@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          xcodebuild -project EyeApp.xcodeproj \
+            -scheme EyeApp \
+            -configuration Release \
+            -destination 'platform=macOS' \
+            clean build
+
+      - name: Archive
+        run: |
+          mkdir -p build/archive
+          xcodebuild -project EyeApp.xcodeproj \
+            -scheme EyeApp \
+            -configuration Release \
+            -archivePath build/archive/EyeApp.xcarchive \
+            archive
+
+      - name: Package App
+        run: |
+          mkdir -p build/export
+          cp -R build/archive/EyeApp.xcarchive/Products/Applications/EyeApp.app build/export/
+          cd build/export
+          zip -r EyeApp-macOS.zip EyeApp.app
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/export/EyeApp-macOS.zip
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
