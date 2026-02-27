@@ -78,6 +78,13 @@ class SessionManager: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let minimumConfidence: Double = 0.5
 
+    /// 未检测到人脸的连续帧数
+    private var noFaceDetectedCount: Int = 0
+    /// 自动暂停阈值（连续帧数，约 1 秒）
+    private let autoPauseThreshold: Int = 30
+    /// 是否因未检测到人脸而自动暂停
+    private var isAutoPaused: Bool = false
+
     // MARK: - Initialization
 
     init(
@@ -109,9 +116,14 @@ class SessionManager: ObservableObject {
             self?.handleCameraError(error)
         }
 
-        // 视觉服务回调
+        // 视觉服务回调 - 人脸检测成功
         visionService.onFaceDetected = { [weak self] leftEye, rightEye, confidence in
             self?.handleFaceDetected(leftEye: leftEye, rightEye: rightEye, confidence: confidence)
+        }
+
+        // 视觉服务回调 - 未检测到人脸
+        visionService.onNoFaceDetected = { [weak self] in
+            self?.handleNoFaceDetected()
         }
     }
 
@@ -185,7 +197,31 @@ class SessionManager: ObservableObject {
     }
 
     private func handleFaceDetected(leftEye: [CGPoint], rightEye: [CGPoint], confidence: Double) {
+        // 重置未检测到人脸的计数器
+        noFaceDetectedCount = 0
+
+        // 如果是自动暂停状态，恢复监测
+        if isAutoPaused {
+            isAutoPaused = false
+            updateState(.running)
+            print("✅ 检测到人脸，恢复监测")
+        }
+
         processVisionResult(leftEye: leftEye, rightEye: rightEye, confidence: confidence)
+    }
+
+    /// 处理未检测到人脸的情况
+    private func handleNoFaceDetected() {
+        guard state == .running else { return }
+
+        noFaceDetectedCount += 1
+
+        // 达到阈值时自动暂停
+        if noFaceDetectedCount >= autoPauseThreshold && !isAutoPaused {
+            isAutoPaused = true
+            updateState(.paused)
+            print("⚠️ 连续未检测到人脸，自动暂停监测")
+        }
     }
 
     // MARK: - Private Methods - Blink Handling
@@ -311,6 +347,7 @@ protocol BlinkDetectorProtocol {
 /// 视觉服务协议
 protocol VisionServiceProtocol {
     var onFaceDetected: (([CGPoint], [CGPoint], Double) -> Void)? { get set }
+    var onNoFaceDetected: (() -> Void)? { get set }
     func process(sampleBuffer: CMSampleBuffer)
 }
 
