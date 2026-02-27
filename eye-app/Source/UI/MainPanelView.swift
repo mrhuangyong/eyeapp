@@ -23,7 +23,6 @@ struct MainPanelView: View {
     // MARK: - State
 
     @State private var selectedTimeRange: TimeRange = .today
-    @State private var showingSettings = false
 
     // MARK: - Initialization
 
@@ -76,12 +75,6 @@ struct MainPanelView: View {
             footerControls
         }
         .frame(width: 400, height: 550)
-        .sheet(isPresented: $showingSettings) {
-            SettingsPanelView(
-                dataStorage: viewModel.dataStorage,
-                alertManager: viewModel.alertManager
-            )
-        }
         .onAppear {
             viewModel.loadData()
         }
@@ -95,12 +88,6 @@ struct MainPanelView: View {
                 .font(.headline)
 
             Spacer()
-
-            Button(action: { showingSettings = true }) {
-                Image(systemName: "gearshape")
-            }
-            .buttonStyle(.plain)
-            .help("设置")
         }
         .padding()
     }
