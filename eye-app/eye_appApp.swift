@@ -57,6 +57,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // 创建 SessionManager
         setupSessionManager()
 
+        // 根据配置注册开机启动
+        setupLaunchAtLogin()
+
         // 创建状态栏控制器
         setupStatusBar()
 
@@ -285,5 +288,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // 保存配置
         dataStorage.saveConfig(config)
+    }
+
+    // MARK: - Launch at Login
+
+    private func setupLaunchAtLogin() {
+        // TODO: 将在下一个任务中实现
+        // 根据 config.launchAtLogin 配置注册或注销开机启动
     }
 }
