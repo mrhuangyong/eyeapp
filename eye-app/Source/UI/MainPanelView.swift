@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Charts
+import AVFoundation
 
 /// 主面板视图
 struct MainPanelView: View {
@@ -15,6 +16,10 @@ struct MainPanelView: View {
 
     @ObservedObject private var viewModel: MainPanelViewModel
 
+    // MARK: - Callbacks
+
+    var onShowPreviewWindow: (() -> Void)?
+
     // MARK: - State
 
     @State private var selectedTimeRange: TimeRange = .today
@@ -22,12 +27,21 @@ struct MainPanelView: View {
 
     // MARK: - Initialization
 
-    init(statsEngine: StatsEngine, alertManager: AlertManager, dataStorage: DataStorage) {
+    init(viewModel: MainPanelViewModel, onShowPreviewWindow: (() -> Void)? = nil) {
+        self._viewModel = ObservedObject(wrappedValue: viewModel)
+        self.onShowPreviewWindow = onShowPreviewWindow
+    }
+
+    // 便利初始化方法（向后兼容）
+    init(statsEngine: StatsEngine, alertManager: AlertManager, dataStorage: DataStorage, cameraManager: CameraManager? = nil, config: AppConfig? = nil, onShowPreviewWindow: (() -> Void)? = nil) {
         self._viewModel = ObservedObject(wrappedValue: MainPanelViewModel(
             statsEngine: statsEngine,
             alertManager: alertManager,
-            dataStorage: dataStorage
+            dataStorage: dataStorage,
+            cameraManager: cameraManager,
+            config: config
         ))
+        self.onShowPreviewWindow = onShowPreviewWindow
     }
 
     // MARK: - Body
@@ -41,6 +55,9 @@ struct MainPanelView: View {
 
             ScrollView {
                 VStack(spacing: 20) {
+                    // 摄像头预览区域
+                    previewSection
+
                     // 实时统计卡片
                     realtimeStatsSection
 
@@ -58,7 +75,7 @@ struct MainPanelView: View {
             // 底部控制栏
             footerControls
         }
-        .frame(width: 400, height: 500)
+        .frame(width: 400, height: 550)
         .sheet(isPresented: $showingSettings) {
             SettingsPanelView(
                 dataStorage: viewModel.dataStorage,
@@ -86,6 +103,49 @@ struct MainPanelView: View {
             .help("设置")
         }
         .padding()
+    }
+
+    // MARK: - Preview Section
+
+    private var previewSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("📹 摄像头预览")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+
+            if viewModel.previewEnabled {
+                if let session = viewModel.previewSession, session.isRunning {
+                    ZStack(alignment: .bottomTrailing) {
+                        CameraPreviewView(
+                            session: session,
+                            isMirrored: viewModel.previewMirrored
+                        )
+                        .frame(width: 240, height: 180)
+                        .cornerRadius(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
+                        )
+
+                        // 放大按钮
+                        Button(action: { onShowPreviewWindow?() }) {
+                            Image(systemName: "arrow.up.left.and.arrow.down.right")
+                                .padding(6)
+                                .background(Color.black.opacity(0.5))
+                                .foregroundColor(.white)
+                                .cornerRadius(4)
+                        }
+                        .buttonStyle(.plain)
+                        .padding(8)
+                        .help("在新窗口中打开")
+                    }
+                } else {
+                    CameraPreviewPlaceholder(message: "摄像头未就绪\n请先开始监测")
+                        .frame(width: 240, height: 180)
+                        .cornerRadius(8)
+                }
+            }
+        }
     }
 
     // MARK: - Realtime Stats
@@ -199,14 +259,6 @@ struct MainPanelView: View {
 
     private var footerControls: some View {
         HStack {
-            Button(action: { viewModel.toggleMonitoring() }) {
-                Label(
-                    viewModel.isMonitoring ? "⏸ 暂停" : "▶ 开始",
-                    systemImage: viewModel.isMonitoring ? "pause.fill" : "play.fill"
-                )
-            }
-            .buttonStyle(.borderedProminent)
-
             Spacer()
 
             Button("清除今日数据") {

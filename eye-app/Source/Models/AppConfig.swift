@@ -61,6 +61,14 @@ struct AppConfig: Codable, Equatable {
     /// 是否记录原始事件
     var recordRawEvents: Bool = true
 
+    // MARK: - Preview Settings
+
+    /// 是否启用主面板预览
+    var previewEnabled: Bool = true
+
+    /// 预览是否镜像显示
+    var previewMirrored: Bool = true
+
     // MARK: - Startup Settings
 
     /// 开机自启动
@@ -99,6 +107,8 @@ struct AppConfig: Codable, Equatable {
         case sensitivity
         case dataRetentionDays
         case recordRawEvents
+        case previewEnabled
+        case previewMirrored
         case launchAtLogin
         case autoStartMonitoring
         case showMenuBarIcon
@@ -114,6 +124,8 @@ struct AppConfig: Codable, Equatable {
         try container.encode(sensitivity, forKey: .sensitivity)
         try container.encode(dataRetentionDays, forKey: .dataRetentionDays)
         try container.encode(recordRawEvents, forKey: .recordRawEvents)
+        try container.encode(previewEnabled, forKey: .previewEnabled)
+        try container.encode(previewMirrored, forKey: .previewMirrored)
         try container.encode(launchAtLogin, forKey: .launchAtLogin)
         try container.encode(autoStartMonitoring, forKey: .autoStartMonitoring)
         try container.encode(showMenuBarIcon, forKey: .showMenuBarIcon)

@@ -117,6 +117,14 @@ struct DetectionSettingsView: View {
 
     var body: some View {
         Form {
+            Section("📹 预览设置") {
+                Toggle("启用主面板预览", isOn: $viewModel.config.previewEnabled)
+                    .help("在主面板顶部显示摄像头实时画面")
+
+                Toggle("镜像显示", isOn: $viewModel.config.previewMirrored)
+                    .help("水平镜像摄像头画面（类似照镜子）")
+            }
+
             Section("🎯 检测灵敏度") {
                 Picker("灵敏度", selection: $viewModel.config.sensitivity) {
                     ForEach(SensitivityLevel.allCases, id: \.self) { level in

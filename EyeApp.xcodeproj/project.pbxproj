@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		068C5D5FCDD520A3E17826E6 /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89ECC891D3F3C772FCCF6EB1 /* CameraPreviewView.swift */; };
 		0FF530B75CEF529D0022FB21 /* SettingsPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3D980E039BCAA2A2C3EF8B /* SettingsPanelView.swift */; };
 		176DAA6C5A34C077396C475D /* FatigueStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59FBE9F4321ECA9FE6926B7D /* FatigueStatus.swift */; };
 		2658CF995384CFD6345DB9E8 /* AutoSaveService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC46D2DC46AE0BB55A1D669E /* AutoSaveService.swift */; };
@@ -26,6 +27,7 @@
 		C43696E4F476C94C3E6F1897 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BDEFE4344DD49A2B7A8BF839 /* Assets.xcassets */; };
 		C6DA0D61A519BAE1C15F57A8 /* DailyBlinkData.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA9AFCD12970FEC2A12D7AD /* DailyBlinkData.swift */; };
 		F7D72E21EAD5F3F24C49B5A8 /* MainPanelViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C2C61B957D0D49A85D2BE79 /* MainPanelViewModel.swift */; };
+		FBF9D4234DDA9413CADA1481 /* PreviewWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2B59399DD49050BBA2EDE7 /* PreviewWindowController.swift */; };
 		FD6BCB207C7D552A1AEB5C2F /* BlinkEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805E50DD578A6DC29CB09E0F /* BlinkEvent.swift */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +43,8 @@
 		73E07873493F5260A3B0E79A /* eye_appApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = eye_appApp.swift; sourceTree = "<group>"; };
 		7D3D980E039BCAA2A2C3EF8B /* SettingsPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPanelView.swift; sourceTree = "<group>"; };
 		805E50DD578A6DC29CB09E0F /* BlinkEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkEvent.swift; sourceTree = "<group>"; };
+		89ECC891D3F3C772FCCF6EB1 /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
+		8D2B59399DD49050BBA2EDE7 /* PreviewWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewWindowController.swift; sourceTree = "<group>"; };
 		A2A0FDF7D56CC1BAAEC015B8 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		ADA9AFCD12970FEC2A12D7AD /* DailyBlinkData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyBlinkData.swift; sourceTree = "<group>"; };
 		AFE698FE7CF30B3518ADFB47 /* EyeApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EyeApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -69,9 +73,11 @@
 		1AE92331931C458AAFA5D815 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				89ECC891D3F3C772FCCF6EB1 /* CameraPreviewView.swift */,
 				4219AFB3C8B879CE3B629344 /* ErrorView.swift */,
 				CE818CB4FE0ACCC59F447091 /* MainPanelView.swift */,
 				6C2C61B957D0D49A85D2BE79 /* MainPanelViewModel.swift */,
+				8D2B59399DD49050BBA2EDE7 /* PreviewWindowController.swift */,
 				7D3D980E039BCAA2A2C3EF8B /* SettingsPanelView.swift */,
 				3962D8D4182C0330809978CE /* StatusBarController.swift */,
 			);
@@ -209,6 +215,7 @@
 				80F198ED356A454448A552D4 /* BlinkDetector.swift in Sources */,
 				FD6BCB207C7D552A1AEB5C2F /* BlinkEvent.swift in Sources */,
 				98724AD63B57937CB3FF6D84 /* CameraManager.swift in Sources */,
+				068C5D5FCDD520A3E17826E6 /* CameraPreviewView.swift in Sources */,
 				C6DA0D61A519BAE1C15F57A8 /* DailyBlinkData.swift in Sources */,
 				4EA89D37D8CB1CB95D096A6D /* DataStorage.swift in Sources */,
 				33E496D35A2F8889449E19A6 /* ErrorView.swift in Sources */,
@@ -216,6 +223,7 @@
 				ADBAE196781247C606295B50 /* MainPanelView.swift in Sources */,
 				F7D72E21EAD5F3F24C49B5A8 /* MainPanelViewModel.swift in Sources */,
 				5FC0688BF739863A5857185A /* MinuteStats.swift in Sources */,
+				FBF9D4234DDA9413CADA1481 /* PreviewWindowController.swift in Sources */,
 				4FBBDDB296C83B0F1E13BCE9 /* SessionManager.swift in Sources */,
 				0FF530B75CEF529D0022FB21 /* SettingsPanelView.swift in Sources */,
 				AFA8AD7560F527BF08E2EE43 /* StatsEngine.swift in Sources */,

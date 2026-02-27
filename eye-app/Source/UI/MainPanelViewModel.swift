@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import AVFoundation
 
 /// 主面板视图模型
 class MainPanelViewModel: ObservableObject {
@@ -27,17 +28,37 @@ class MainPanelViewModel: ObservableObject {
     @Published var trendData: [TrendDataPoint] = []
     @Published var historyStats: HistoryStats = .empty
 
+    // MARK: - Preview Properties (Published for SwiftUI)
+
+    /// 预览用的 session（由外部设置）
+    @Published var previewSession: AVCaptureSession?
+
+    /// 是否启用预览
+    @Published var previewEnabled: Bool = true
+
+    /// 是否镜像显示
+    @Published var previewMirrored: Bool = true
+
     // MARK: - Private Properties
+
+    private weak var cameraManagerRef: CameraManager?
 
     private var cancellables = Set<AnyCancellable>()
     private var updateTimer: Timer?
 
     // MARK: - Initialization
 
-    init(statsEngine: StatsEngine, alertManager: AlertManager, dataStorage: DataStorage) {
+    init(statsEngine: StatsEngine, alertManager: AlertManager, dataStorage: DataStorage, cameraManager: CameraManager? = nil, config: AppConfig? = nil) {
         self.statsEngine = statsEngine
         self.alertManager = alertManager
         self.dataStorage = dataStorage
+        self.cameraManagerRef = cameraManager
+
+        // 加载预览配置
+        if let config = config {
+            self.previewEnabled = config.previewEnabled
+            self.previewMirrored = config.previewMirrored
+        }
 
         setupBindings()
         startUpdateTimer()
@@ -109,6 +130,12 @@ class MainPanelViewModel: ObservableObject {
         todayTotalBlinks = 0
         currentBlinkRate = 0
         fatigueStatus = nil
+    }
+
+    /// 更新预览配置
+    func updatePreviewConfig(enabled: Bool, mirrored: Bool) {
+        previewEnabled = enabled
+        previewMirrored = mirrored
     }
 
     // MARK: - Private Methods

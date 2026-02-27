@@ -79,10 +79,13 @@ class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
     private var statusItem: NSStatusItem
     private var popover: NSPopover?
     private var settingsWindow: NSWindow?
+    private var mainPanelViewModel: MainPanelViewModel?
 
     private let statsEngine: StatsEngine
     private let alertManager: AlertManager
     private let dataStorage: DataStorage
+    private var cameraManager: CameraManager?
+    private var config: AppConfig
 
     @Published private(set) var status: StatusBarStatus = .ready
     @Published private(set) var blinkRate: Int = 0
@@ -92,15 +95,16 @@ class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
 
     var onStartMonitoring: (() -> Void)?
     var onStopMonitoring: (() -> Void)?
-    var onPauseMonitoring: (() -> Void)?
-    var onResumeMonitoring: (() -> Void)?
+    var onShowPreviewWindow: (() -> Void)?
 
     // MARK: - Initialization
 
-    init(statsEngine: StatsEngine, alertManager: AlertManager, dataStorage: DataStorage) {
+    init(statsEngine: StatsEngine, alertManager: AlertManager, dataStorage: DataStorage, cameraManager: CameraManager? = nil, config: AppConfig = .default) {
         self.statsEngine = statsEngine
         self.alertManager = alertManager
         self.dataStorage = dataStorage
+        self.cameraManager = cameraManager
+        self.config = config
 
         // 创建状态栏项目
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -141,16 +145,6 @@ class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
         toggleItem.tag = 101
         toggleItem.target = self
         menu.addItem(toggleItem)
-
-        // 暂停/恢复
-        let pauseItem = NSMenuItem(
-            title: "暂停",
-            action: #selector(togglePause),
-            keyEquivalent: "p"
-        )
-        pauseItem.tag = 102
-        pauseItem.target = self
-        menu.addItem(pauseItem)
 
         menu.addItem(NSMenuItem.separator())
 
@@ -193,6 +187,7 @@ class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
         DispatchQueue.main.async { [weak self] in
             self?.status = newStatus
             self?.updateIcon()
+            self?.updateMenuItems()
         }
     }
 
@@ -242,9 +237,6 @@ class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
                 item.title = "眨眼率: \(blinkRate) 次/分"
             case 101:
                 item.title = status == .running ? "停止监测" : "开始监测"
-            case 102:
-                item.title = status == .paused ? "恢复" : "暂停"
-                item.isEnabled = status == .running || status == .paused
             default:
                 break
             }
@@ -263,25 +255,33 @@ class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
         }
     }
 
-    @objc private func togglePause() {
-        if status == .paused {
-            onResumeMonitoring?()
-            updateStatus(.running)
-        } else if status == .running {
-            onPauseMonitoring?()
-            updateStatus(.paused)
-        }
-    }
-
     @objc private func showMainPanel() {
+        // 创建或复用 ViewModel
+        if mainPanelViewModel == nil {
+            mainPanelViewModel = MainPanelViewModel(
+                statsEngine: statsEngine,
+                alertManager: alertManager,
+                dataStorage: dataStorage,
+                cameraManager: cameraManager,
+                config: config
+            )
+        }
+
+        // 在主线程异步设置 previewSession，避免视图更新期间发布变化
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self, let viewModel = self.mainPanelViewModel else { return }
+            viewModel.previewSession = self.cameraManager?.session
+        }
+
         let mainPanel = MainPanelView(
-            statsEngine: statsEngine,
-            alertManager: alertManager,
-            dataStorage: dataStorage
+            viewModel: mainPanelViewModel!,
+            onShowPreviewWindow: { [weak self] in
+                self?.onShowPreviewWindow?()
+            }
         )
 
         let popover = NSPopover()
-        popover.contentSize = NSSize(width: 400, height: 500)
+        popover.contentSize = NSSize(width: 400, height: 550)
         popover.behavior = .transient
         popover.contentViewController = NSHostingController(rootView: mainPanel)
 

@@ -38,6 +38,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - UI
 
     private var statusBarController: StatusBarController?
+    private var previewWindowController: PreviewWindowController?
 
     // MARK: - State
 
@@ -157,7 +158,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarController = StatusBarController(
             statsEngine: statsEngine,
             alertManager: alertManager,
-            dataStorage: dataStorage
+            dataStorage: dataStorage,
+            cameraManager: cameraManager,
+            config: config
         )
 
         statusBarController?.onStartMonitoring = { [weak self] in
@@ -168,13 +171,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self?.sessionManager.stop()
         }
 
-        statusBarController?.onPauseMonitoring = { [weak self] in
-            self?.sessionManager.pause()
+        statusBarController?.onShowPreviewWindow = { [weak self] in
+            self?.showPreviewWindow()
+        }
+    }
+
+    // MARK: - Preview Window
+
+    private func showPreviewWindow() {
+        guard let session = cameraManager.session else { return }
+
+        if previewWindowController == nil {
+            previewWindowController = PreviewWindowController(
+                session: session,
+                isMirrored: config.previewMirrored
+            )
         }
 
-        statusBarController?.onResumeMonitoring = { [weak self] in
-            self?.sessionManager.resume()
-        }
+        previewWindowController?.updateMirrored(config.previewMirrored)
+        previewWindowController?.showWindow()
     }
 
     private func setupAutoSave() {

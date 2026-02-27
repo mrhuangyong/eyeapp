@@ -69,6 +69,11 @@ class CameraManager: NSObject {
     private var videoOutput: AVCaptureVideoDataOutput?
     private let sessionQueue = DispatchQueue(label: "com.eyeapp.camera", qos: .userInteractive)
 
+    /// 暴露 capture session 供预览使用
+    var session: AVCaptureSession? {
+        return captureSession
+    }
+
     /// 当前状态
     private(set) var state: CameraState = .idle {
         didSet {
