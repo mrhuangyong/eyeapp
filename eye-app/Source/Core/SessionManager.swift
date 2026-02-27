@@ -60,6 +60,11 @@ class SessionManager: ObservableObject {
     private let statsEngine: StatsEngine
     private let alertManager: AlertManager
 
+    // MARK: - Configuration
+
+    /// 应用配置
+    var config: AppConfig = .default
+
     // MARK: - Published Properties
 
     @Published private(set) var state: SessionState = .idle
@@ -192,7 +197,8 @@ class SessionManager: ObservableObject {
     // MARK: - Private Methods - Frame Handling
 
     private func handleCameraFrame(_ buffer: CMSampleBuffer) {
-        guard state == .running else { return }
+        // 始终处理帧以支持自动恢复功能
+        // 即使在暂停状态,也需要检测人脸以便在检测到人脸时自动恢复
         visionService.process(sampleBuffer: buffer)
     }
 
@@ -258,10 +264,23 @@ class SessionManager: ObservableObject {
 
     private func checkFatigueAlert() {
         if alertManager.shouldTriggerAlert() {
-            alertManager.triggerAlert()
-
-            // 发送疲劳提醒通知
             let status = alertManager.checkFatigueStatus()
+
+            // 根据配置决定发送哪些通知
+
+            // 弹窗提醒：通过回调触发（由 StatusBarController 控制）
+            if config.alertModalEnabled {
+                // 使用 triggerAlertSilent() 避免重复检查 shouldTriggerAlert()
+                alertManager.triggerAlertSilent()
+                alertManager.onAlertTriggered?(status)
+            }
+
+            // 系统通知：直接发送（如果启用）
+            if config.alertNotificationEnabled {
+                alertManager.sendNotification(status: status)
+            }
+
+            // 发送疲劳提醒通知（用于内部通信）
             NotificationCenter.default.post(
                 name: .fatigueAlertTriggered,
                 object: status

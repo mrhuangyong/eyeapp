@@ -116,7 +116,8 @@ class AlertManager {
 
         let status = checkFatigueStatus()
         triggerAlertSilent()
-        sendNotification(status: status)
+
+        // 通知回调（让调用方决定是否发送系统通知）
         onAlertTriggered?(status)
     }
 
