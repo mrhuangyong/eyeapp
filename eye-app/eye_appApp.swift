@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import ServiceManagement
 
 @main
 struct EyeAppApp: App {
@@ -292,8 +293,33 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // MARK: - Launch at Login
 
+    /// 根据配置注册或注销开机启动
     private func setupLaunchAtLogin() {
-        // TODO: 将在下一个任务中实现
-        // 根据 config.launchAtLogin 配置注册或注销开机启动
+        #if os(macOS)
+        if #available(macOS 13.0, *) {
+            let service = SMAppService.mainApp
+
+            if config.launchAtLogin {
+                // 注册开机启动
+                do {
+                    try service.register()
+                    print("✅ 开机启动已注册")
+                } catch {
+                    print("❌ 注册开机启动失败: \(error.localizedDescription)")
+                }
+            } else {
+                // 确保未注册(处理用户之前关闭的情况)
+                do {
+                    try service.unregister()
+                    print("ℹ️ 开机启动已注销")
+                } catch {
+                    // 忽略注销失败(可能本来就没注册)
+                }
+            }
+        } else {
+            // macOS 13 以下的兼容性提示
+            print("⚠️ 开机启动需要 macOS 13.0 或更高版本")
+        }
+        #endif
     }
 }
