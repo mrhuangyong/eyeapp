@@ -72,12 +72,13 @@ enum StatusBarStatus: Equatable {
 }
 
 /// 状态栏控制器
-class StatusBarController: NSObject, ObservableObject {
+class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
 
     // MARK: - Properties
 
     private var statusItem: NSStatusItem
     private var popover: NSPopover?
+    private var settingsWindow: NSWindow?
 
     private let statsEngine: StatsEngine
     private let alertManager: AlertManager
@@ -292,21 +293,46 @@ class StatusBarController: NSObject, ObservableObject {
     }
 
     @objc private func openSettings() {
+        // 如果设置窗口已经打开，直接激活
+        if let existingWindow = settingsWindow {
+            existingWindow.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+
         let settingsPanel = SettingsPanelView(
             dataStorage: dataStorage,
             alertManager: alertManager
         )
 
-        let window = NSWindow(
+        let window = NSPanel(
             contentRect: NSRect(x: 0, y: 0, width: 500, height: 400),
-            styleMask: [.titled, .closable],
+            styleMask: [.titled, .closable, .resizable],
             backing: .buffered,
             defer: false
         )
         window.title = "EyeApp 设置"
         window.contentView = NSHostingView(rootView: settingsPanel)
         window.center()
+        window.delegate = self
+        window.hidesOnDeactivate = false
+        window.isReleasedWhenClosed = false
         window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+
+        self.settingsWindow = window
+    }
+
+    // MARK: - NSWindowDelegate
+
+    func windowWillClose(_ notification: Notification) {
+        guard let window = notification.object as? NSWindow, window == settingsWindow else { return }
+        // 不清除 settingsWindow 引用，因为 isReleasedWhenClosed = false
+        // 窗口会被保留，下次可以直接重用
+    }
+
+    func windowDidBecomeKey(_ notification: Notification) {
+        // 窗口成为主窗口时的处理
     }
 
     @objc private func quitApp() {
