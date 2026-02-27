@@ -1,0 +1,42 @@
+name: EyeApp
+options:
+  bundleIdPrefix: com.mrhua
+  deploymentTarget:
+    macOS: "14.0"
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    PRODUCT_NAME: EyeApp
+
+targets:
+  EyeApp:
+    type: application
+    platform: macOS
+    sources:
+      - eye-app/eye_appApp.swift
+      - eye-app/Source/Core
+      - eye-app/Source/Models
+      - eye-app/Source/Services
+      - eye-app/Source/UI
+      - eye-app/Assets.xcassets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mrhua.EyeApp
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_NSCameraUsageDescription: "需要访问摄像头来检测眨眼频率，用于健康监测和疲劳提醒。"
+        INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.healthcare-fitness"
+        INFOPLIST_KEY_LSUIElement: YES
+        CODE_SIGN_ENTITLEMENTS: eye-app/EyeApp.entitlements
+        CODE_SIGN_STYLE: Automatic
+        COMBINE_HIDPI_IMAGES: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_PREVIEWS: YES
+    entitlements:
+      path: eye-app/EyeApp.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.camera: true
+        com.apple.security.device.camera: true
+        com.apple.security.files.user-selected.read-write: true

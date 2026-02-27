@@ -72,7 +72,7 @@ enum StatusBarStatus: Equatable {
 }
 
 /// 状态栏控制器
-class StatusBarController: ObservableObject {
+class StatusBarController: NSObject, ObservableObject {
 
     // MARK: - Properties
 
@@ -103,6 +103,9 @@ class StatusBarController: ObservableObject {
 
         // 创建状态栏项目
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        popover = nil
+
+        super.init()
 
         setupStatusItem()
         setupMenu()
@@ -135,6 +138,7 @@ class StatusBarController: ObservableObject {
             keyEquivalent: "m"
         )
         toggleItem.tag = 101
+        toggleItem.target = self
         menu.addItem(toggleItem)
 
         // 暂停/恢复
@@ -144,34 +148,41 @@ class StatusBarController: ObservableObject {
             keyEquivalent: "p"
         )
         pauseItem.tag = 102
+        pauseItem.target = self
         menu.addItem(pauseItem)
 
         menu.addItem(NSMenuItem.separator())
 
         // 显示主面板
-        menu.addItem(NSMenuItem(
+        let showPanelItem = NSMenuItem(
             title: "显示统计",
             action: #selector(showMainPanel),
             keyEquivalent: "s"
-        ))
+        )
+        showPanelItem.target = self
+        menu.addItem(showPanelItem)
 
         // 设置
-        menu.addItem(NSMenuItem(
+        let settingsItem = NSMenuItem(
             title: "设置...",
             action: #selector(openSettings),
             keyEquivalent: ","
-        ))
+        )
+        settingsItem.target = self
+        menu.addItem(settingsItem)
 
         menu.addItem(NSMenuItem.separator())
 
         // 退出
-        menu.addItem(NSMenuItem(
+        let quitItem = NSMenuItem(
             title: "退出 EyeApp",
             action: #selector(quitApp),
             keyEquivalent: "q"
-        ))
+        )
+        quitItem.target = self
+        menu.addItem(quitItem)
 
-        statusItem.menu = menu
+        self.statusItem.menu = menu
     }
 
     // MARK: - Public Methods
