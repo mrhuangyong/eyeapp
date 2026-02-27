@@ -144,6 +144,7 @@ class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
         )
         toggleItem.tag = 101
         toggleItem.target = self
+        toggleItem.image = NSImage(systemSymbolName: "eye", accessibilityDescription: "监测")
         menu.addItem(toggleItem)
 
         menu.addItem(NSMenuItem.separator())
@@ -154,6 +155,7 @@ class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
             action: #selector(showMainPanel),
             keyEquivalent: "s"
         )
+        showPanelItem.image = NSImage(systemSymbolName: "chart.bar", accessibilityDescription: "统计")
         showPanelItem.target = self
         menu.addItem(showPanelItem)
 
@@ -163,6 +165,7 @@ class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
             action: #selector(openSettings),
             keyEquivalent: ","
         )
+        settingsItem.image = NSImage(systemSymbolName: "gearshape", accessibilityDescription: "设置")
         settingsItem.target = self
         menu.addItem(settingsItem)
 
@@ -247,11 +250,16 @@ class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
         guard let menu = statusItem.menu else { return }
 
         for item in menu.items {
-            switch item.tag {
+                switch item.tag {
             case 100:
                 item.title = "眨眼率: \(blinkRate) 次/分"
             case 101:
-                item.title = status == .running ? "停止监测" : "开始监测"
+                let isRunning = status == .running
+                item.title = isRunning ? "停止监测" : "开始监测"
+                item.image = NSImage(
+                    systemSymbolName: isRunning ? "stop.fill" : "play.fill",
+                    accessibilityDescription: isRunning ? "停止" : "开始"
+                )
             default:
                 break
             }
