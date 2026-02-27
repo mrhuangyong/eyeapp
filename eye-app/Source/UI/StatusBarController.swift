@@ -217,14 +217,29 @@ class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
 
     private func updateIcon() {
         if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: status.icon, accessibilityDescription: "EyeApp")
+            let image = NSImage(systemSymbolName: status.icon, accessibilityDescription: "EyeApp")
+            // 使用模板图像，让系统自动处理颜色
+            image?.isTemplate = true
+            button.image = image
             button.toolTip = status.tooltip
         }
     }
 
     private func updateIconColor(_ color: Color) {
         if let button = statusItem.button {
-            button.contentTintColor = NSColor(color)
+            // 使用 NSColor.labelColor 作为基础，叠加状态颜色
+            let nsColor = NSColor(color)
+            // 根据外观调整亮度
+            let appearance = button.effectiveAppearance
+            let isDark = appearance.name == .darkAqua || appearance.name == .vibrantDark
+
+            if isDark {
+                // 深色模式：使用较亮的颜色
+                button.contentTintColor = nsColor.withAlphaComponent(0.9)
+            } else {
+                // 浅色模式：使用原色
+                button.contentTintColor = nsColor
+            }
         }
     }
 

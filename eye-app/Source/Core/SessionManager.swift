@@ -123,6 +123,7 @@ class SessionManager: ObservableObject {
 
         sessionStartTime = Date()
         cameraManager.start()
+        alertManager.startMonitoring()
         updateState(.running)
     }
 
@@ -131,6 +132,7 @@ class SessionManager: ObservableObject {
         guard state == .running || state == .paused else { return }
 
         cameraManager.stop()
+        alertManager.stopMonitoring()
         sessionDuration = calculateDuration()
         updateState(.stopped)
     }

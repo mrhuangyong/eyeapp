@@ -30,6 +30,12 @@ class AlertManager {
     /// 上次提醒时间
     var lastAlertTime: Date?
 
+    /// 监测开始时间（用于预热期判断）
+    var monitoringStartTime: Date?
+
+    /// 预热期（秒）- 在此时间内不触发提醒
+    private let warmupPeriod: TimeInterval = 60
+
     /// 提醒回调
     var onAlertTriggered: ((FatigueStatus) -> Void)?
 
@@ -56,11 +62,32 @@ class AlertManager {
 
     // MARK: - Alert Logic
 
+    /// 开始监测（重置预热期计时器）
+    func startMonitoring() {
+        monitoringStartTime = Date()
+    }
+
+    /// 停止监测
+    func stopMonitoring() {
+        monitoringStartTime = nil
+    }
+
     /// 是否应该触发提醒
     /// - Returns: 是否应该提醒
     func shouldTriggerAlert() -> Bool {
         // 检查是否启用
         guard config.enabled else { return false }
+
+        // 检查是否在预热期内
+        if let startTime = monitoringStartTime {
+            let elapsedTime = Date().timeIntervalSince(startTime)
+            if elapsedTime < warmupPeriod {
+                return false
+            }
+        } else {
+            // 未开始监测，不提醒
+            return false
+        }
 
         // 检查疲劳状态
         let status = checkFatigueStatus()
